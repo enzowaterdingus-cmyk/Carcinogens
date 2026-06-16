@@ -3,6 +3,7 @@ import random
 from Player import *
 from constants import *
 from cell import *
+import levels
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -31,6 +32,11 @@ new_cell(50, CENTER_Y, 50)
 
 
 player = Player(CENTER_X+100, CENTER_Y)
+l1 = levels.one()
+l2 = levels.two()
+l3 = levels.three()
+l4 = levels.four()
+l5 = levels.five()
 
 clock = pygame.time.Clock()
 running = True
