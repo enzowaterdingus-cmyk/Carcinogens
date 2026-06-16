@@ -7,6 +7,8 @@ class cell:
         self.y = y
         self.radius = radius
         self.point = dynamicPoint(self.x, self.y)
+        self.vx = 0
+        self.vy = 0
         
     
     def draw(self, screen):
@@ -17,11 +19,13 @@ class cell:
     def update(self):
         self.point.x = self.x
         self.point.y = self.y
-        
-        
-        
-       
         #offset based off scroll
         self.point = self.point.translate(-c.SCROLL_X, -c.SCROLL_Y)
+        #push cells away from each other
+        self.x += self.vx
+        self.y += self.vy
+        
+        self.vx *= 0.8
+        self.vy *= 0.8
         
         
