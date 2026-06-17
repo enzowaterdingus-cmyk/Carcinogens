@@ -1,135 +1,56 @@
 import pygame
-import random
-from Player import *
-from constants import *
-from cell import *
-import levels
-
-
-pygame.init()
-
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-screen.fill("black")
-pygame.display.flip()
+from dynamicPoint import *
+import constants
 
 
 
-
-cells = []
-
-#push cells away from each other
-
-def cell_push_apart():
-    for this in cells:
-        for other in cells:
-            if other != this:
-                #find distance, ux, uy
-                dx = other.x-this.x
-                dy = other.y-this.y
-                distance = math.sqrt(dx**2 + dy**2)
-                if distance<5:
-                    distance = 5
-                if distance < this.radius+other.radius:
-                    ux = dx/distance
-                    uy = dy/distance
-                    overlap = other.radius + this.radius - distance
-                    fx = this.x - ux*overlap
-                    fy = this.y - uy*overlap
-                    
-                    this.x += (fx-this.x)/4
-                    this.y += (fy-this.y)/4
-                
-        #check collision with player
-        dx = player.x-this.x
-        dy = player.y-this.y
-        distance = math.sqrt(dx**2 + dy**2)
-        if distance<5:
-            distance = 5
-        if distance < this.radius+other.radius:
-            ux = dx/distance
-            uy = dy/distance
-            overlap = 50 + this.radius - distance
-            fx = this.x - ux*overlap
-            fy = this.y - uy*overlap 
-            this.x += (fx-this.x)/4
-            this.y += (fy-this.y)/4
-
-
-
-
-
-
-
-
-
-
-def update_cells():
-    for cell in cells:
-        cell.update()
-        cell.draw(screen)
-        
-def new_cell(x, y, r):
-    new = cell(x, y, r)
-    cells.append(new)
-
-def createCellBox():
-        widthLow = -200
-        widthHigh = 1000
-        heightLow = -200
-        heightHigh = 1000
-        for i in range(widthLow, widthHigh, 40):
-            new_cell(widthLow+random.randint(-10, 10), i+random.randint(-10, 10), random.randint(30, 50))
-            new_cell(widthHigh+random.randint(-10, 10), i+random.randint(-10, 10), random.randint(30, 50))
-        for i in range(heightLow, heightHigh, 40):
-            new_cell(i+random.randint(-10, 10), heightLow+random.randint(-10, 10), random.randint(30, 50))
-            new_cell(i+random.randint(-10, 10), heightHigh+random.randint(-10, 10), random.randint(30, 50))
+class Player:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.vx = 0
+        self.vy = 0
+        self.forward_speed = 0
+        self.direction = 0
+        self.point = dynamicPoint(self.x, self.y)
         
 
-        for i in range(50):
-            pass
+        self.dev_shape = pygame.Rect(self.point.x-20, self.point.y-30, 40, 60)
+    def draw(self, screen):
+        pygame.draw.circle(screen, "red", (self.point.x, self.point.y), 20, 2)
+        pygame.draw.line(screen, "red", (self.dev_shape.left, self.dev_shape.top), (self.dev_shape.right, self.dev_shape.bottom), 2)
+        pygame.draw.line(screen, "red", (self.dev_shape.right, self.dev_shape.top), (self.dev_shape.left, self.dev_shape.bottom), 2)
+        
         
 
 
-
-
-
-player = Player(CENTER_X+100, CENTER_Y)
-l1 = levels.one()
-l2 = levels.two()
-l3 = levels.three()
-l4 = levels.four()
-l5 = levels.five()
-
-#render player image
-player_image = pygame.image.load("/Users/enzogleichauf/Documents/whitebloodcell.png")
-def render_player():
-    img_width = 100
-    img_height = 100
-
-    transformed = pygame.transform.scale(player_image, (img_width, img_height))
-    screen.blit(transformed, (player.point.x-img_width/2, player.point.y-img_width/2))
-
-createCellBox()
-clock = pygame.time.Clock()
-running = True
-time = 0
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    def update_controls(self):
+        
+        #global SCROLL_X
+        #global SCROLL_Y
     
-    clock.tick(60)
-    screen.fill("white")
-    player.draw(screen)
+        self.x += self.vx
+        self.y += self.vy
+        self.point.x = self.x
+        self.point.y = self.y
+        self.point = self.point.translate(-constants.SCROLL_X, -constants.SCROLL_Y)
+        self.dev_shape = pygame.Rect(self.point.x-20, self.point.y-30, 40, 60)
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            
+            self.vy -= 1
+        elif keys[pygame.K_DOWN]:
+           
+            self.vy += 1
+        
+        if keys [pygame.K_LEFT]:
+            self.vx -= 1
+        elif keys[pygame.K_RIGHT]:
+            self.vx += 1
+        
+        self.vx *= 0.9
+        self.vy *= 0.9
 
-    render_player()
-
-    player.update_controls()
-    update_cells()
-    cell_push_apart()
-    
-    pygame.display.flip()
-    
-
-pygame.quit()
+        constants.SCROLL_X += ((self.x-constants.CENTER_X) - constants.SCROLL_X)/4
+        constants.SCROLL_Y += ((self.y-constants.CENTER_Y) - constants.SCROLL_Y)/4
 
