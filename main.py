@@ -4,7 +4,7 @@ from Player import *
 import constants
 from cell import *
 import levels
-import button
+import ui
 import dynamicPoint
 from pyvidplayer2 import Video
 
@@ -205,8 +205,40 @@ def gradual_text(text: str, x, y,):
         clock.tick(60)
         pygame.time.wait(50)
 
-playButton = button.button(constants.CENTER_X, 300, 300, 100, "Start")
-quitButton = button.button(constants.CENTER_X, HEIGHT-300, 200, 50, "quit")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+playButton = ui.button(CENTER_X, 500, 300, 100, "Start")
+quitButton = ui.button(CENTER_X, HEIGHT-100, 200, 50, "quit")
 
 title = constants.GAME_FONT.render("CANCER GAME THING", True, "white")
 
@@ -216,13 +248,16 @@ pygame.time.set_timer(title_screen_new_cell_event, 2000)
 clock = pygame.time.Clock()
 new_cell(CENTER_X, CENTER_Y, 50, True)
 
-
 IN_TITLE_SCREEN = True
 
 while IN_TITLE_SCREEN:
+    
 
     playButton.smooth_load()
     quitButton.smooth_load()
+
+
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -270,6 +305,9 @@ while IN_TITLE_SCREEN:
         IN_TITLE_SCREEN = False
         pygame.quit()
     
+
+    
+
     clock.tick(60)
     screen.fill(BG_COLOR)
     screen.blit(title, (CENTER_X-title.get_rect().width/2, 100))
@@ -280,15 +318,33 @@ while IN_TITLE_SCREEN:
     quitButton.draw(screen)
     quitButton.check_click()
     
+    
+    
     cell_push_apart()
     pygame.display.flip()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 cells = []
 #opening cutscene start
+skipButton = ui.button(WIDTH-100, HEIGHT-100, 100, 50, "Skip")
 OPENING_CUTSCENE.play()
 
 running = True
 while running:
+    skipButton.smooth_load()
 
     clock.tick(60)
     
@@ -302,11 +358,12 @@ while running:
 
 
     OPENING_CUTSCENE.draw(screen, (0, 0))
-
+    skipButton.draw(screen)
+    skipButton.check_click()
 
     pygame.display.update()
 
-    if not OPENING_CUTSCENE.active:
+    if not OPENING_CUTSCENE.active or skipButton.activated:
         running = False
         
 
@@ -330,13 +387,15 @@ OPENING_CUTSCENE.close()
 
 
 
-
-
+#level 1 loop
+title1 = ui.topTitle(100, CENTER_X, 200, "LEVEL ONE")
+subtitle = ui.subTitle(CENTER_X, 300, "Bone Marrow")
 
 LEVEL_1 = Level(CENTER_X, CENTER_Y, 2000, 2000)
 
 
 LEVEL_1.createCellBox()
+
 
 
 clock = pygame.time.Clock()
@@ -346,6 +405,12 @@ time = 0
 CANCER_DIVIDE = pygame.USEREVENT + 2
 pygame.time.set_timer(CANCER_DIVIDE, 50000)
 while running:
+    title1.smooth_load()
+    
+
+
+
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -363,13 +428,21 @@ while running:
 
             
                     
+    subtitle.time += 1
+    if subtitle.time > 300:
+        subtitle.showing = False
     
+    title1.time += 1
+    if title1.time > 300:
+        title1.smooth_close()
     clock.tick(60)
     screen.fill(BG_COLOR)
     bound_camera()
     #draw_background()
     player.draw(screen)
 
+    subtitle.draw(screen)
+    title1.draw(screen)
     player.update_controls()
     player.updateForwardVector()
     update_cells()
