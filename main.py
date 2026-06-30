@@ -468,12 +468,12 @@ def helper(text):
     screen.fill(BG_COLOR)
     pygame.display.flip()
 
-helper("You are a white blood cell\n\n       enter to continue")
-helper("Your job is to kill cancer cells\n\n       enter to continue")
-helper("Use WASD to move around\n\n       enter to continue")
-helper("Click on cells to kill them.\n\n       enter to continue")
-# Fixed this line to match your 2-argument helper structure
-helper("Good luck!\n\n       enter to continue") 
+helper("You are a white blood cell, your purpose is to keep the body healthy\n\n       enter to continue")
+helper("Navigate the body by using arrow keys. Destroy cells by clicking them\n\n       enter to continue")
+helper("Beware though, there are cancer cells\n\n       enter to continue")
+helper("And at all costs...\n\n       enter to continue")
+helper("do not kill healthy cells")
+
 
 
 
