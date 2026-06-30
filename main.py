@@ -277,7 +277,7 @@ def gradual_text(text: str, x, y,):
         text_surface = constants.GAME_FONT.render(text[:i], True, "black")
         screen.blit(text_surface, (x, y))
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(16000)
         pygame.time.wait(50)
 
 
@@ -444,6 +444,16 @@ while running:
 
 
 OPENING_CUTSCENE.close()
+
+pygame.mixer.init()
+background_music = pygame.mixer.music.load("5462458621362176.wav")
+pygame.mixer.music.play(loops=-1, fade_ms=2000)
+
+#do slide sequence
+
+
+
+
 
 
 
