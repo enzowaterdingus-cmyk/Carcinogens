@@ -27,7 +27,7 @@ class cell:
         img_width = self.radius*2
         img_height = self.radius*2
 
-        if self.highlighted or self.isCancer:
+        if self.highlighted:
             CELL_IMAGE = constants.CELL_RED
         else:
             CELL_IMAGE = constants.CELL_NORMAL
@@ -36,6 +36,8 @@ class cell:
         transformed = pygame.transform.rotate(transformed, self.ID)
 
         screen.blit(transformed, (self.point.x-1.5*self.radius, self.point.y-1.5*self.radius))
+
+        if self.isCancer: pygame.draw.rect(screen, "green", self.rect)
         
         
 

@@ -14,11 +14,15 @@ class Player:
         self.forward_speed = 0
         self.direction = 0 #direction in degrees of forward vector
         self.point = dynamicPoint(self.x, self.y)
+
+        self.cancer_killed = 0
+        self.healthy_killed = 0
+        self.score = 0
         
         
 
-        self.rect = pygame.Rect(x-r, y-r, r*2, r*2)
-        self.bigRect = pygame.Rect(x-r*2, y-r*2, r*4, r*4)
+        self.rect = pygame.Rect(self.x-r/2, self.y-r/2, r, r)
+        self.bigRect = pygame.Rect(self.x-r, self.y-r, r*2, r*2)
     
     def updateForwardVector(self):
         real_direction = -(math.atan2(self.vy, self.vx)*180/math.pi)
@@ -35,6 +39,7 @@ class Player:
         transformed = pygame.transform.scale(transformed, (img_width+math.sqrt(self.vx**2+self.vy**2)*3, img_height-math.sqrt(self.vx**2+self.vy**2)*3))
         transformed = pygame.transform.rotate(transformed, self.direction)
         screen.blit(transformed, (self.point.x-img_width/2, self.point.y-img_width/2))
+      
 
 
 
@@ -80,3 +85,23 @@ class Player:
 
         constants.SCROLL_X += ((self.x-constants.CENTER_X) - constants.SCROLL_X)/4
         constants.SCROLL_Y += ((self.y-constants.CENTER_Y) - constants.SCROLL_Y)/4
+
+        if self.healthy_killed == 0:
+            self.score = 1
+        else:
+            self.score = self.cancer_killed/(self.healthy_killed+self.cancer_killed)
+        
+        self.rect = pygame.Rect(self.point.x-r/2, self.point.y-r/2, r, r)
+        self.bigRect = pygame.Rect(self.point.x-r, self.point.y-r, r*2, r*2)
+
+    
+    def bound_camera(self, level):
+        if constants.SCROLL_X > level.widthHigh - CENTER_X - 50:
+            constants.SCROLL_X = level.widthHigh - CENTER_X - 50
+        elif constants.SCROLL_X < level.widthLow + CENTER_X + 50:
+            constants.SCROLL_X = level.widthLow + CENTER_X + 50
+
+        if constants.SCROLL_Y > level.heightHigh - CENTER_Y - 50:
+            constants.SCROLL_Y = level.heightHigh - CENTER_Y - 50
+        if constants.SCROLL_Y < level.heightLow + CENTER_Y + 50:
+            constants.SCROLL_Y = level.heightLow + CENTER_Y + 50

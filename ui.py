@@ -25,7 +25,7 @@ class topTitle:
         self.leftx = self.x-300*size/100
         self.rightx = self.x+300*size/100
         self.time = 0
-        self.showing = False
+        self.showing = True
     def draw(self, screen : pygame.Surface):
         if self.showing:
             self.text_surface = pygame.transform.scale(self.text_surface, (self.width*self.text_size/100, self.height*self.text_size/100))
@@ -41,11 +41,10 @@ class topTitle:
         self.rightthingyx += (self.rightx-self.rightthingyx)/5
     
     def smooth_close(self):
-        self.leftthingyx += (self.x - self.leftthingyx)/5
-        self.rightthingyx += (self.x - self.rightthingyx)/5
+        self.leftthingyx += 5
+        self.rightthingyx -= 5
 
-        if abs(self.x - self.leftthingyx) < 0.1:
-            self.showing = False
+        
             
 
         
@@ -126,6 +125,21 @@ class button:
     
     def process_click(self):
         self.activated = True
+
+
+
+class uiContainer:
+    def __init__(self):
+        self.rect = pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT)
+        self.img = constants.UI_CONTAINER_IMAGE
+    
+    def draw(self, screen : pygame.Surface):
+        img = pygame.transform.scale(self.img, (constants.WIDTH, constants.HEIGHT))
+        screen.blit(img, (0, 0))
+    
+    def drawScore(self, screen : pygame.Surface, player):
+        text = constants.GAME_FONT.render(f"SCORE : {player.score}", True, "white")
+        screen.blit(text, (constants.CENTER_X, 50))
         
 
         

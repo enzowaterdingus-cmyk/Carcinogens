@@ -14,6 +14,7 @@ pygame.init()
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 screen.fill((186, 81, 70))
+
 pygame.display.flip()
 
 BG_COLOR = (186, 81, 70)
@@ -25,6 +26,7 @@ heightHigh = 1800
 
 cells = []
 player = Player(CENTER_X+100, CENTER_Y)
+uiBorder = ui.uiContainer()
 
 #level class
 class Level:
@@ -51,6 +53,92 @@ class Level:
         for i in range(5):
             new_cell(random.randint(self.widthLow, self.widthHigh), random.randint(self.widthLow, self.widthHigh), random.randint(30, 50), False)
             cells[len(cells)-1].isCancer = True
+    
+    def run(self):
+        SCORE = 0
+
+        #level 1 loop
+        title1 = ui.topTitle(100, CENTER_X, 200, "LEVEL ONE")
+        subtitle = ui.subTitle(CENTER_X, 300, "Bone Marrow")
+
+        
+
+
+
+        clock = pygame.time.Clock()
+        running = True
+        time = 0
+
+        CANCER_DIVIDE = pygame.USEREVENT + 2
+        pygame.time.set_timer(CANCER_DIVIDE, 50000)
+        while running:
+            title1.smooth_load()
+
+
+
+
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+
+                elif event.type == CANCER_DIVIDE:
+                    for i in range(len(cells)-1, -1, -1):
+                        this_cell = cells[i]
+                        if this_cell.isCancer:
+                            new_cell(this_cell.x+5, this_cell.y + 5, random.randint(30, 50), True)
+                            cells[-1].isCancer = True
+                            new_cell(this_cell.x-5, this_cell.y-5, random.randint(30, 50), True)
+                            cells[-1].isCancer = True
+                            del cells[i]
+                    pygame.time.set_timer(CANCER_DIVIDE, 20000) 
+
+
+
+            subtitle.time += 1
+            if subtitle.time > 240:
+                subtitle.showing = False
+
+            title1.time += 1
+            if title1.time > 240:
+                for i in range(10):
+                    title1.smooth_close()
+                title1.showing = False
+            clock.tick(60)
+            screen.fill(BG_COLOR)
+
+            #draw_background()
+            player.draw(screen)
+
+
+            title1.draw(screen)
+            player.update_controls()
+            player.updateForwardVector()
+            player.bound_camera(LEVEL_1)
+            update_cells()
+            cell_push_apart()
+            check_cell_kill()
+            subtitle.draw(screen)
+            title1.draw(screen)
+
+            uiBorder.draw(screen)
+            uiBorder.drawScore(screen, player)
+
+
+
+            pygame.display.set_caption(f"Cancer:healthy {player.cancer_killed}:{player.healthy_killed} ||| overall {round(player.score, 3)*100}%")
+            pygame.display.flip()
+
+
+        
+
+
+
+
+
+
+
 
 #push cells away from each other
 def cell_push_apart():
@@ -89,15 +177,13 @@ def cell_push_apart():
             this.y += (fy-this.y)/4
     
     #don't go beyond borders
-        if this.x > widthHigh:
+        if this.x > widthHigh - 50:
             this.vx -= 1
-        if this.x < widthLow:
+        if this.x < widthLow + 50:
             this.vx += 1
-        if this.y > heightHigh:
-            
+        if this.y > heightHigh - 50:
             this.vy -= 1
-        if this.y < heightLow:
-            
+        if this.y < heightLow + 50:
             this.vy += 1
 
 
@@ -109,22 +195,6 @@ def draw_background():
     transformed = pygame.transform.scale(constants.MIDDLEGROUND_IMG, (img_width, img_height))
 
     screen.blit(transformed, (widthLow*2-constants.SCROLL_X, heightLow*2-constants.SCROLL_Y))
-
-
-def bound_camera():
-    global SCROLL_X
-    global SCROLL_Y
-
-    if SCROLL_X-WIDTH < widthLow:
-        SCROLL_X = widthLow + WIDTH
-    elif SCROLL_X+WIDTH > widthHigh:
-        SCROLL_X = widthHigh - WIDTH
-    
-    if SCROLL_Y-HEIGHT < heightLow:
-        SCROLL_Y = heightLow + HEIGHT
-
-    elif SCROLL_Y+HEIGHT > heightHigh:
-        SCROLL_Y = heightHigh - HEIGHT
 
 
 
@@ -165,6 +235,11 @@ def check_cell_kill():
             screen.blit(transformed, (pos[0]-r/2, pos[1]-r/2))
             if mouse_pressed:
                 #kill cell
+                if this.isCancer:
+                    player.cancer_killed += 1
+                else:
+                    player.healthy_killed += 1
+
                 del cells[i]
         
         
@@ -382,80 +457,8 @@ pygame.mixer.music.play(loops=-1, fade_ms=2000)
 
 
 
-
-
-
-
-
-
-
-
-
-#level 1 loop
-title1 = ui.topTitle(100, CENTER_X, 200, "LEVEL ONE")
-subtitle = ui.subTitle(CENTER_X, 300, "Bone Marrow")
-
+#START GAME
 LEVEL_1 = Level(CENTER_X, CENTER_Y, 2000, 2000)
-
-
 LEVEL_1.createCellBox()
-
-
-
-clock = pygame.time.Clock()
-running = True
-time = 0
-
-CANCER_DIVIDE = pygame.USEREVENT + 2
-pygame.time.set_timer(CANCER_DIVIDE, 50000)
-while running:
-    title1.smooth_load()
-    
-
-
-
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        
-        elif event.type == CANCER_DIVIDE:
-            for i in range(len(cells)-1, -1, -1):
-                this_cell = cells[i]
-                if this_cell.isCancer:
-                    new_cell(this_cell.x+5, this_cell.y + 5, random.randint(30, 50), True)
-                    cells[-1].isCancer = True
-                    new_cell(this_cell.x-5, this_cell.y-5, random.randint(30, 50), True)
-                    cells[-1].isCancer = True
-                    del cells[i]
-            pygame.time.set_timer(CANCER_DIVIDE, 50000) 
-
-            
-                    
-    subtitle.time += 1
-    if subtitle.time > 300:
-        subtitle.showing = False
-    
-    title1.time += 1
-    if title1.time > 300:
-        title1.smooth_close()
-    clock.tick(60)
-    screen.fill(BG_COLOR)
-    bound_camera()
-    #draw_background()
-    player.draw(screen)
-
-    subtitle.draw(screen)
-    title1.draw(screen)
-    player.update_controls()
-    player.updateForwardVector()
-    update_cells()
-    cell_push_apart()
-    check_cell_kill()
-    
-    
-    pygame.display.flip()
-    
-
-pygame.quit()
+LEVEL_1.run()
 
